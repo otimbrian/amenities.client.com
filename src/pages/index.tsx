@@ -40,10 +40,10 @@ const IndexContent = () => {
   });
 
   const [roomTypes, setRoomTypes] = useState([
-    { id: 'standard', name: 'Standard Suite', price: 299 },
-    { id: 'deluxe', name: 'Deluxe Suite', price: 399 },
-    { id: 'premium', name: 'Premium Suite', price: 599 },
-    { id: 'presidential', name: 'Presidential Suite', price: 999 }
+    { id: 'standard', name: 'Standard Suite', price: 299000 },
+    { id: 'deluxe', name: 'Deluxe Suite', price: 399000 },
+    { id: 'premium', name: 'Premium Suite', price: 599000 },
+    { id: 'presidential', name: 'Presidential Suite', price: 999000 }
   ]);
 
   const { isAuthenticated, logout } = useAuth();

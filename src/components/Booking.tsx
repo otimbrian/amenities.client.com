@@ -7,24 +7,17 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import emailjs from '@emailjs/browser';
 
-// import React from 'react';
-
-type RoomType = {
+interface RoomType {
   id: string;
   name: string;
   price: number;
-};
+}
 
 interface BookingProps {
   roomTypes: RoomType[];
 }
 
-// const Booking: React.FC<BookingProps> = ({ roomTypes }) => {
-//   // component implementation
-// };
-
-
-export const Booking: React.FC <BookingProps>= ({roomTypes}) => {
+export const Booking: React.FC<BookingProps> = ({ roomTypes }) => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -36,17 +29,59 @@ export const Booking: React.FC <BookingProps>= ({roomTypes}) => {
     specialRequests: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [dateError, setDateError] = useState('');
   const { toast } = useToast();
 
+  const validateDates = (checkIn: string, checkOut: string) => {
+    if (!checkIn || !checkOut) {
+      setDateError('');
+      return true;
+    }
+
+    const checkInDate = new Date(checkIn);
+    const checkOutDate = new Date(checkOut);
+    const oneDayLater = new Date(checkInDate);
+    oneDayLater.setDate(oneDayLater.getDate() + 1);
+
+    if (checkOutDate < oneDayLater) {
+      setDateError('Check-out date must be at least one day after check-in date');
+      return false;
+    }
+
+    setDateError('');
+    return true;
+  };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    setFormData({
+    const { name, value } = e.target;
+    const newFormData = {
       ...formData,
-      [e.target.name]: e.target.value
-    });
+      [name]: value
+    };
+    setFormData(newFormData);
+
+    // Validate dates when either check-in or check-out changes
+    if (name === 'checkIn' || name === 'checkOut') {
+      validateDates(
+        name === 'checkIn' ? value : newFormData.checkIn,
+        name === 'checkOut' ? value : newFormData.checkOut
+      );
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Final validation before submission
+    if (!validateDates(formData.checkIn, formData.checkOut)) {
+      toast({
+        title: "Invalid Dates",
+        description: "Please ensure check-out date is at least one day after check-in date.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -85,6 +120,7 @@ export const Booking: React.FC <BookingProps>= ({roomTypes}) => {
         roomType: 'standard',
         specialRequests: ''
       });
+      setDateError('');
     } catch (error) {
       console.error('EmailJS error:', error);
       toast({
@@ -177,7 +213,7 @@ export const Booking: React.FC <BookingProps>= ({roomTypes}) => {
                   required
                   value={formData.checkIn}
                   onChange={handleInputChange}
-                  className="mt-1 border-slate-300 focus:border-amber-500 focus:ring-amber-500"
+                  className={`mt-1 border-slate-300 focus:border-amber-500 focus:ring-amber-500 ${dateError ? 'border-red-500' : ''}`}
                 />
               </div>
               <div>
@@ -189,10 +225,16 @@ export const Booking: React.FC <BookingProps>= ({roomTypes}) => {
                   required
                   value={formData.checkOut}
                   onChange={handleInputChange}
-                  className="mt-1 border-slate-300 focus:border-amber-500 focus:ring-amber-500"
+                  className={`mt-1 border-slate-300 focus:border-amber-500 focus:ring-amber-500 ${dateError ? 'border-red-500' : ''}`}
                 />
               </div>
             </div>
+
+            {dateError && (
+              <div className="text-red-500 text-sm font-medium">
+                {dateError}
+              </div>
+            )}
 
             <div>
               <Label htmlFor="roomType" className="text-slate-700 font-medium">Room Type</Label>
@@ -203,10 +245,11 @@ export const Booking: React.FC <BookingProps>= ({roomTypes}) => {
                 onChange={handleInputChange}
                 className="mt-1 w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
               >
-                <option value="standard">Standard Suite - UGX 299000/night</option>
-                <option value="deluxe">Deluxe Suite - UGX 399000/night</option>
-                <option value="premium">Premium Suite - UGX 599000/night</option>
-                <option value="presidential">Presidential Suite - UGX 999000/night</option>
+                {roomTypes.map(room => (
+                  <option key={room.id} value={room.id}>
+                    {room.name} - UGX {room.price} /night
+                  </option>
+                ))}
               </select>
             </div>
 
@@ -225,8 +268,8 @@ export const Booking: React.FC <BookingProps>= ({roomTypes}) => {
 
             <Button
               type="submit"
-              disabled={isSubmitting}
-              className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white py-3 text-lg font-semibold rounded-xl transform hover:scale-105 transition-all duration-300 shadow-lg"
+              disabled={isSubmitting || !!dateError}
+              className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white py-3 text-lg font-semibold rounded-xl transform hover:scale-105 transition-all duration-300 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             >
               {isSubmitting ? 'Sending Request...' : 'Send Booking Request'}
             </Button>
