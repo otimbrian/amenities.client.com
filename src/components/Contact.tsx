@@ -17,8 +17,8 @@ export const Contact: React.FC = () => {
               <Phone className="w-8 h-8 text-white" />
             </div>
             <h3 className="text-xl font-semibold mb-2">Phone</h3>
-            <p className="text-slate-300">+1 (555) 123-4567</p>
-            <p className="text-slate-300">+1 (555) 123-4568</p>
+            <p className="text-slate-300">+256 (755) 123-4567</p>
+            <p className="text-slate-300">+256 (775) 123-4567</p>
           </div>
           
           <div className="text-center">
@@ -36,7 +36,7 @@ export const Contact: React.FC = () => {
             </div>
             <h3 className="text-xl font-semibold mb-2">Address</h3>
             <p className="text-slate-300">123 Luxury Avenue</p>
-            <p className="text-slate-300">Downtown, NY 10001</p>
+            <p className="text-slate-300">Kampala, Uganda</p>
           </div>
           
           <div className="text-center">
