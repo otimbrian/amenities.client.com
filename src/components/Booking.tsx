@@ -53,9 +53,9 @@ export const Booking: React.FC <BookingProps>= ({roomTypes}) => {
       // Initialize EmailJS (replace with your actual IDs)
       const result = await emailjs.send(
         'service_613m127', // Replace with your EmailJS service ID
-        'template_1cqs5tp', // Replace with your EmailJS template ID
+        'template_p8bp6rv', // Replace with your EmailJS template ID
         {
-          to_email: 'admin@grandvista.com', // Admin email
+          to_email: 'otims.brian@gmail.com', // Admin email
           from_name: formData.name,
           from_email: formData.email,
           phone: formData.phone,
