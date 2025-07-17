@@ -8,13 +8,15 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
+    allowedHosts: ['hotel-test-client-com.onrender.com']
   },
 
     build: {
     rollupOptions: {
-      external: ['react', 'react-dom']  // ✅ correct usage
+      external: ['react', 'react-dom']  
     }
   },
+  
   plugins: [
     react(),
     mode === 'development' &&
